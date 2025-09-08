@@ -241,16 +241,6 @@ if command -v dircolors >/dev/null 2>&1; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
 fi
 
-# Welcome message with system info (only if not using instant prompt and not in tmux)
-if [[ $- == *i* && -z "$POWERLEVEL9K_INSTANT_PROMPT" && -z "$TMUX" ]]; then
-    echo "🚀 Welcome to your supercharged ZSH!"
-    echo "📊 System: $(uname -sr)"
-    echo "🏠 Home: $HOME"
-    echo "⚡ Shell: $SHELL"
-    if command -v git >/dev/null 2>&1; then
-        echo "🔧 Git: $(git --version)"
-    fi
-fi
 
 # Load local customizations
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
