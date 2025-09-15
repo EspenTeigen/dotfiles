@@ -3,6 +3,8 @@ return {
   -- 'nvim-telescope/telescope.nvim' or 'ibhagwan/fzf-lua' or 'folke/snacks.nvim'
   -- are highly recommended for a better experience
   dependencies = { "nvim-lua/plenary.nvim", "nvim-telescope/telescope.nvim" },
+  ft = { "cs", "fsharp", "vb" },
+  event = { "BufReadPre *.cs", "BufReadPre *.fs", "BufReadPre *.vb", "BufReadPre *.csproj", "BufReadPre *.fsproj", "BufReadPre *.vbproj", "BufReadPre *.sln" },
   config = function()
     local function get_secret_path(secret_guid)
       local path = ""
@@ -21,6 +23,14 @@ return {
     end
 
     local dotnet = require("easy-dotnet")
+    -- Ensure dotnet tools are in PATH for Neovim
+    local home = vim.fn.expand("~")
+    local dotnet_tools_path = home .. "/.dotnet/tools"
+    local current_path = vim.env.PATH or ""
+    if not string.find(current_path, dotnet_tools_path, 1, true) then
+      vim.env.PATH = dotnet_tools_path .. ":" .. current_path
+    end
+    
     -- Options are not required
     dotnet.setup({
       --Optional function to return the path for the dotnet sdk (e.g C:/ProgramFiles/dotnet/sdk/8.0.0)
