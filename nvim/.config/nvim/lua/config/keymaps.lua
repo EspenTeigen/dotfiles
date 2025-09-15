@@ -8,3 +8,9 @@ vim.keymap.set("n", "<leader>;", function()
     vim.api.nvim_set_current_line(line .. ";")
   end
 end, { noremap = true, silent = true, desc = "Add semicolon at end of line" })
+
+-- Which-key group for obsidian
+local wk = require("which-key")
+wk.add({
+  { "<leader>o", group = "obsidian" },
+})
