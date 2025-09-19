@@ -158,6 +158,9 @@ alias pscpu='ps auxf | sort -nr -k 3'
 alias cpuinfo='lscpu'
 alias gpumeminfo='grep -i --color memory /proc/meminfo'
 
+# SSHFS aliases
+alias mount-fi='sshfs NTE-FI-01-02:/home/pi ~/projects/frankenstein-dev -o idmap=user,uid=1000,gid=1000,allow_other,reconnect'
+
 # Advanced functions
 mkcd() {
     mkdir -p "$1" && cd "$1"
