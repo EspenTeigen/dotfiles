@@ -67,8 +67,13 @@ include /etc/sway/config-vars.d/*
 
 ### Output configuration
 #
-# Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
+# Dynamic wallpapers - automatically uses any images in the wallpapers directory
+# Set initial wallpaper (will be overridden by rotation script)
+output * bg "$HOME/.config/sway/wallpapers/dark_cyber_city_ultrawide.jpg" fill
+
+# Start wallpaper rotation daemon
+exec_always pkill -f wallpaper-rotator || true
+exec_always ~/.config/sway/scripts/wallpaper-rotator.sh &
 #
 # Example configuration:
 #
@@ -129,6 +134,9 @@ exec swayidle -w \
 
     # Lock screen with cool effects
     bindsym $mod+Ctrl+l exec swaylock -f -c 000000 --ring-color 8aadf4 --key-hl-color c6a0f6 --line-color 00000000 --inside-color 24273a88 --separator-color 00000000
+
+    # Cycle wallpapers manually (Super+Shift+w)
+    bindsym $mod+Shift+w exec ~/.config/sway/scripts/cycle-wallpaper.sh
 
     # Show keybindings
     bindsym $mod+question exec sh -c 'grep "bindsym" ~/.config/sway/config | grep -v "^#" | sed "s/.*bindsym //" | rofi -dmenu -i -p "Keybindings" -theme-str "window { width: 50%; height: 60%; }"'
