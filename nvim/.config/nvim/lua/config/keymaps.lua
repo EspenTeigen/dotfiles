@@ -9,8 +9,12 @@ vim.keymap.set("n", "<leader>;", function()
   end
 end, { noremap = true, silent = true, desc = "Add semicolon at end of line" })
 
--- Which-key group for obsidian
+-- Which-key group for obsidian and dotnet
 local wk = require("which-key")
 wk.add({
   { "<leader>o", group = "obsidian" },
+  { "<leader>c", group = "code" },
 })
+
+-- Easy-dotnet keymap
+vim.keymap.set("n", "<leader>ce", "<cmd>Dotnet<cr>", { desc = "Easy Dotnet" })
