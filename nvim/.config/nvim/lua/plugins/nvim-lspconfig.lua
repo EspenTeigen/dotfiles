@@ -17,6 +17,7 @@ return {
             "FormattingOptions:EnableEditorConfigSupport=true",
             "FormattingOptions:EnableXmlDocComment=true",
           },
+          root_dir = require('lspconfig.util').root_pattern('*.sln', '*.csproj', '.git'),
           enable_roslyn_analyzers = true,
           organize_imports_on_format = true,
           enable_import_completion = true,

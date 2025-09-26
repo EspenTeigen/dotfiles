@@ -43,6 +43,6 @@ font-size = 14
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
 window-decoration = false
-theme = catppuccin-macchiato
+theme = tokyonight_night
 background-opacity = 0.92
 

@@ -10,40 +10,33 @@ input * {
 # Enable transparency for ghostty
 for_window [app_id="com.mitchellh.ghostty"] opacity 0.92
 
-# Catppuccin Macchiato colors
-set $base #24273a
-set $mantle #1e2030
-set $crust #181926
-set $text #cad3f5
-set $subtext0 #a5adcb
-set $subtext1 #b8c0e0
-set $surface0 #363a4f
-set $surface1 #494d64
-set $surface2 #5b6078
-set $overlay0 #6e738d
-set $overlay1 #8087a2
-set $overlay2 #939ab7
-set $blue #8aadf4
-set $lavender #b7bdf8
-set $sapphire #7dc4e4
-set $sky #91d7e3
-set $teal #8bd5ca
-set $green #a6da95
-set $yellow #eed49f
-set $peach #f5a97f
-set $maroon #ee99a0
-set $red #ed8796
-set $mauve #c6a0f6
-set $pink #f5bde6
-set $flamingo #f0c6c6
-set $rosewater #f4dbd6
+# Tokyo Night Dark colors
+set $base #1a1b26
+set $surface #16161e
+set $overlay #414868
+set $muted #565f89
+set $subtle #444b6a
+set $text #c0caf5
+set $love #f7768e
+set $gold #e0af68
+set $rose #ff7a93
+set $pine #9ece6a
+set $foam #7dcfff
+set $iris #bb9af7
+set $blue #7aa2f7
+set $cyan #7dcfff
+set $green #9ece6a
+set $yellow #e0af68
+set $orange #ff9e64
+set $red #f7768e
+set $magenta #bb9af7
 
 # Window borders
-client.focused $lavender $base $text $rosewater $lavender
-client.focused_inactive $overlay0 $base $text $rosewater $overlay0
-client.unfocused $overlay0 $base $subtext0 $rosewater $overlay0
-client.urgent $peach $base $peach $overlay0 $peach
-client.placeholder $overlay0 $base $subtext0 $rosewater $overlay0
+client.focused $blue $base $text $cyan $blue
+client.focused_inactive $overlay $base $text $cyan $overlay
+client.unfocused $overlay $base $muted $cyan $overlay
+client.urgent $red $base $red $overlay $red
+client.placeholder $overlay $base $muted $cyan $overlay
 client.background $base
 
 ### Variables
@@ -68,8 +61,8 @@ include /etc/sway/config-vars.d/*
 ### Output configuration
 #
 # Dynamic wallpapers - automatically uses any images in the wallpapers directory
-# Set initial wallpaper (will be overridden by rotation script)
-output * bg "$HOME/.config/sway/wallpapers/dark_cyber_city_ultrawide.jpg" fill
+# Set solid color background (will be overridden by rotation script if wallpapers exist)
+output * bg $base solid_color
 
 # Start wallpaper rotation daemon
 exec_always pkill -f wallpaper-rotator || true
@@ -85,9 +78,9 @@ exec_always ~/.config/sway/scripts/wallpaper-rotator.sh &
 #
 # Auto-lock after 10 minutes, turn off displays after 15 minutes
 exec swayidle -w \
-         timeout 600 'swaylock -f -c 000000 --ring-color 8aadf4 --key-hl-color c6a0f6 --line-color 00000000 --inside-color 24273a88 --separator-color 00000000' \
+         timeout 600 'swaylock -f -c 1a1b26 --ring-color 7aa2f7 --key-hl-color bb9af7 --line-color 00000000 --inside-color 1a1b2688 --separator-color 00000000' \
          timeout 900 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
-         before-sleep 'swaylock -f -c 000000 --ring-color 8aadf4 --key-hl-color c6a0f6 --line-color 00000000 --inside-color 24273a88 --separator-color 00000000'
+         before-sleep 'swaylock -f -c 1a1b26 --ring-color 7aa2f7 --key-hl-color bb9af7 --line-color 00000000 --inside-color 1a1b2688 --separator-color 00000000'
 
 ### Input configuration
 #
@@ -133,7 +126,7 @@ exec swayidle -w \
     bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
 
     # Lock screen with cool effects
-    bindsym $mod+Ctrl+l exec swaylock -f -c 000000 --ring-color 8aadf4 --key-hl-color c6a0f6 --line-color 00000000 --inside-color 24273a88 --separator-color 00000000
+    bindsym $mod+Ctrl+l exec swaylock -f -c 1a1b26 --ring-color 7aa2f7 --key-hl-color bb9af7 --line-color 00000000 --inside-color 1a1b2688 --separator-color 00000000
 
     # Cycle wallpapers manually (Super+Shift+w)
     bindsym $mod+Shift+w exec ~/.config/sway/scripts/cycle-wallpaper.sh
