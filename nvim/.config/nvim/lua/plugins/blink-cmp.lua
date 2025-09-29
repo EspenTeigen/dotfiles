@@ -12,7 +12,7 @@ return {
         direction_priority = { "s", "n" }, -- Prefer showing below cursor, then above
         auto_show = function(ctx)
           -- Only show menu after typing 2+ characters to reduce noise
-          return ctx.trigger.kind == vim.lsp.protocol.CompletionTriggerKind.TriggerCharacter or #ctx.line:sub(1, ctx.cursor[2]):match("[%w_]+$") >= 2
+          return ctx.trigger.kind == vim.lsp.protocol.CompletionTriggerKind.TriggerCharacter or #(ctx.line:sub(1, ctx.cursor[2]):match("[%w_]+$") or "") >= 2
         end,
         winhighlight = "Normal:BlinkCmpMenu,CursorLine:BlinkCmpMenuSel", -- Custom highlight groups for transparency
         winblend = 15, -- Add transparency (0=opaque, 100=fully transparent)

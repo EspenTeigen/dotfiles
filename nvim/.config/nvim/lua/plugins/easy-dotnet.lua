@@ -1,5 +1,9 @@
 return {
   "GustavEikaas/easy-dotnet.nvim",
+  -- Only load if dotnet is available
+  cond = function()
+    return vim.fn.executable("dotnet") == 1
+  end,
   dependencies = {
     "nvim-lua/plenary.nvim",
     "nvim-telescope/telescope.nvim",
