@@ -19,15 +19,18 @@ return {
 
         -- For run commands, always create a new terminal
         if action == "run" then
-          -- Kill any existing dotnet terminal and its process
+          -- Kill any existing dotnet processes more thoroughly
           for _, buf in ipairs(vim.api.nvim_list_bufs()) do
             if vim.api.nvim_buf_is_valid(buf) then
               local buf_name = vim.api.nvim_buf_get_name(buf)
               if buf_name:match("term://.*dotnet") then
-                -- Get the terminal job id and kill it
+                -- Get the terminal job id and kill it with all child processes
                 local job_id = vim.api.nvim_buf_get_var(buf, "terminal_job_id")
                 if job_id then
+                  -- Kill the entire process group to ensure child processes are terminated
                   vim.fn.jobstop(job_id)
+                  -- Also kill any remaining dotnet processes as backup
+                  vim.fn.system("pkill -f 'dotnet.*" .. vim.fn.shellescape(path) .. "'")
                 end
                 vim.api.nvim_buf_delete(buf, { force = true })
               end

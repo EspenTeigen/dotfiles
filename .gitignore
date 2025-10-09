@@ -24,6 +24,13 @@ Thumbs.db
 **/local.conf
 **/local.json
 
+# Neovim
+nvim/.config/nvim/lazy-lock.json
+nvim/.config/nvim/lazyvim.json
+
+# User content directories (symlinked to home)
+sway/.config/sway/wallpapers
+
 # System-specific paths
 **/cache/
 **/logs/

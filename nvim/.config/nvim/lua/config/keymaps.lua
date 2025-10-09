@@ -16,5 +16,25 @@ wk.add({
   { "<leader>c", group = "code" },
 })
 
--- Easy-dotnet keymap
+-- Easy-dotnet keymaps
 vim.keymap.set("n", "<leader>ce", "<cmd>Dotnet<cr>", { desc = "Easy Dotnet" })
+
+-- Kill running dotnet processes
+vim.keymap.set("n", "<leader>ck", function()
+  -- Kill all dotnet terminals and their processes
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_valid(buf) then
+      local buf_name = vim.api.nvim_buf_get_name(buf)
+      if buf_name:match("term://.*dotnet") then
+        local job_id = vim.api.nvim_buf_get_var(buf, "terminal_job_id")
+        if job_id then
+          vim.fn.jobstop(job_id)
+        end
+        vim.api.nvim_buf_delete(buf, { force = true })
+      end
+    end
+  end
+  -- Kill any remaining dotnet run processes
+  vim.fn.system("pkill -f 'dotnet.*run'")
+  vim.notify("Killed all running dotnet processes", vim.log.levels.INFO)
+end, { desc = "Kill dotnet processes" })
