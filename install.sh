@@ -64,6 +64,7 @@ PACKAGES=(
     python3
     python3-numpy
     python3-pil
+    pandoc
 )
 
 # Add sway packages if user wants it
@@ -285,6 +286,10 @@ if [[ "$SHELL" != "$(which zsh)" ]]; then
     chsh -s "$(which zsh)"
     log_success "Default shell changed to zsh"
 fi
+
+# Install Python packages for markdown PDF rendering
+log_info "Installing Python packages for markdown PDF rendering..."
+pip3 install --user weasyprint markdown || log_warn "Failed to install Python packages"
 
 # Install Neovim plugins
 log_info "Installing Neovim plugins..."

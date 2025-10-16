@@ -14,6 +14,7 @@ local wk = require("which-key")
 wk.add({
   { "<leader>o", group = "obsidian" },
   { "<leader>c", group = "code" },
+  { "<leader>m", group = "markdown" },
 })
 
 -- Easy-dotnet keymaps
@@ -38,3 +39,16 @@ vim.keymap.set("n", "<leader>ck", function()
   vim.fn.system("pkill -f 'dotnet.*run'")
   vim.notify("Killed all running dotnet processes", vim.log.levels.INFO)
 end, { desc = "Kill dotnet processes" })
+
+-- Markdown PDF export
+vim.keymap.set("n", "<leader>mr", function()
+  local file = vim.fn.expand("%:p")
+  local output = vim.fn.expand("%:p:r") .. ".pdf"
+  local cmd = string.format("pandoc --from=markdown --to=pdf '%s' --output '%s' --pdf-engine=weasyprint 2>&1", file, output)
+  local result = vim.fn.system(cmd)
+  if vim.v.shell_error ~= 0 then
+    vim.notify("PDF export failed: " .. result, vim.log.levels.ERROR)
+  else
+    vim.notify("PDF exported to: " .. output, vim.log.levels.INFO)
+  end
+end, { desc = "Render PDF" })
