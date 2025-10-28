@@ -115,6 +115,49 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 
         log_success "mpvpaper installed"
     fi
+
+    # Build swaylock-effects for image backgrounds on lockscreen
+    read -p "Install swaylock-effects for image lockscreen backgrounds? (y/n) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        log_info "Building swaylock-effects..."
+
+        # Install build dependencies
+        if [[ "$PKG_MANAGER" == "apt" ]]; then
+            $INSTALL_CMD meson libwayland-dev libpam0g-dev libcairo2-dev libgdk-pixbuf2.0-dev libxkbcommon-dev
+        elif [[ "$PKG_MANAGER" == "pacman" ]]; then
+            $INSTALL_CMD meson wayland pam cairo gdk-pixbuf2 libxkbcommon
+        elif [[ "$PKG_MANAGER" == "dnf" ]]; then
+            $INSTALL_CMD meson wayland-devel pam-devel cairo-devel gdk-pixbuf2-devel libxkbcommon-devel
+        fi
+
+        # Build and install
+        BUILD_DIR=$(mktemp -d)
+        git clone https://github.com/mortie/swaylock-effects.git "$BUILD_DIR"
+        cd "$BUILD_DIR"
+        meson build
+        ninja -C build
+        sudo ninja -C build install
+        cd - > /dev/null
+        rm -rf "$BUILD_DIR"
+
+        log_success "swaylock-effects installed"
+
+        # Copy wallpapers if they exist
+        if [[ -f "$DOTFILES_DIR/wallpapers/lockscreen.png" ]]; then
+            log_info "Copying lockscreen wallpaper..."
+            mkdir -p ~/Pictures
+            cp "$DOTFILES_DIR/wallpapers/lockscreen.png" ~/Pictures/
+            log_success "Lockscreen wallpaper installed"
+        fi
+
+        if [[ -f "$DOTFILES_DIR/wallpapers/cool-abstract-pixel-sunset-river-clouds-WIDE-5120-live-wallpaper-1.mp4" ]]; then
+            log_info "Copying animated wallpaper..."
+            mkdir -p ~/Pictures/wallpapers-animated
+            cp "$DOTFILES_DIR/wallpapers/cool-abstract-pixel-sunset-river-clouds-WIDE-5120-live-wallpaper-1.mp4" ~/Pictures/wallpapers-animated/
+            log_success "Animated wallpaper installed"
+        fi
+    fi
 fi
 
 # Install packages based on package manager

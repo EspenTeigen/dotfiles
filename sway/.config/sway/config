@@ -78,9 +78,9 @@ exec_always "command -v mpvpaper >/dev/null && mpvpaper -o 'loop --vo=gpu --gpu-
 #
 # Auto-lock after 10 minutes, turn off displays after 15 minutes
 exec swayidle -w \
-         timeout 600 'swaylock -f -c 1a1b26 --ring-color 7aa2f7 --key-hl-color bb9af7 --line-color 00000000 --inside-color 1a1b2688 --separator-color 00000000' \
+         timeout 600 'swaylock -f --image ~/Pictures/lockscreen.png --effect-blur 7x5 --effect-vignette 0.5:0.5 --ring-color 7aa2f788 --key-hl-color bb9af7 --bs-hl-color f7768e --ring-ver-color 9ece6a --ring-wrong-color f7768e --text-ver-color 9ece6a --text-wrong-color f7768e --inside-color 1a1b2644 --separator-color 00000000 --line-color 00000000 --indicator-radius 120 --indicator-thickness 12 --fade-in 0.3' \
          timeout 900 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
-         before-sleep 'swaylock -f -c 1a1b26 --ring-color 7aa2f7 --key-hl-color bb9af7 --line-color 00000000 --inside-color 1a1b2688 --separator-color 00000000'
+         before-sleep 'swaylock -f --image ~/Pictures/lockscreen.png --effect-blur 7x5 --effect-vignette 0.5:0.5 --ring-color 7aa2f788 --key-hl-color bb9af7 --bs-hl-color f7768e --ring-ver-color 9ece6a --ring-wrong-color f7768e --text-ver-color 9ece6a --text-wrong-color f7768e --inside-color 1a1b2644 --separator-color 00000000 --line-color 00000000 --indicator-radius 120 --indicator-thickness 12 --fade-in 0.3'
 
 ### Input configuration
 #
@@ -126,7 +126,7 @@ exec swayidle -w \
     bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
 
     # Lock screen with cool effects
-    bindsym $mod+Ctrl+l exec swaylock -f -c 1a1b26 --ring-color 7aa2f7 --key-hl-color bb9af7 --line-color 00000000 --inside-color 1a1b2688 --separator-color 00000000
+    bindsym $mod+Ctrl+l exec swaylock -f --image ~/Pictures/lockscreen.png --effect-blur 7x5 --effect-vignette 0.5:0.5 --ring-color 7aa2f788 --key-hl-color bb9af7 --bs-hl-color f7768e --ring-ver-color 9ece6a --ring-wrong-color f7768e --text-ver-color 9ece6a --text-wrong-color f7768e --inside-color 1a1b2644 --separator-color 00000000 --line-color 00000000 --indicator-radius 120 --indicator-thickness 12 --fade-in 0.3
 
     # Show keybindings
     bindsym $mod+question exec sh -c 'grep "bindsym" ~/.config/sway/config | grep -v "^#" | sed "s/.*bindsym //" | rofi -dmenu -i -p "Keybindings" -theme-str "window { width: 50%; height: 60%; }"'
