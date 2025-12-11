@@ -7,24 +7,13 @@ return {
   ft = { "cs", "fsharp", "vb", "csproj", "fsproj", "sln" },
   config = function()
     require("easy-dotnet").setup({
-      -- Disable built-in LSP - using roslyn.nvim instead
+      -- Roslyn LSP (replaces OmniSharp)
       lsp = {
-        enabled = false,
+        enabled = true,
+        roslynator_enabled = true,
+        analyzer_assemblies = {},
+        config = {},
       },
-      -- Terminal direction (horizontal split)
-      terminal = function(path, action, args)
-        args = args or ""
-        local commands = {
-          run = function() return string.format("dotnet run --project %s %s", path, args) end,
-          test = function() return string.format("dotnet test %s %s", path, args) end,
-          restore = function() return string.format("dotnet restore %s %s", path, args) end,
-          build = function() return string.format("dotnet build %s %s", path, args) end,
-          watch = function() return string.format("dotnet watch --project %s %s", path, args) end,
-        }
-        local command = commands[action]()
-        vim.cmd("split")
-        vim.cmd("term " .. command)
-      end,
       -- DAP integration with netcoredbg
       debugger = {
         bin_path = nil, -- auto-detect from Mason

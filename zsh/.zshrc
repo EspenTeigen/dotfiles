@@ -67,7 +67,7 @@ source ~/.catppuccin-mocha.zsh
 # Environment variables
 export EDITOR='nvim'
 export VISUAL='nvim'
-export BROWSER='firefox'
+export BROWSER='qutebrowser'
 
 # History configuration
 HISTSIZE=50000
@@ -215,12 +215,34 @@ extract() {
 # PATH additions
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
+export PATH="$HOME/.dotnet/tools:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 
-# NVM
+# NVM - Load silently to avoid instant prompt issues
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" --no-use
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+# Auto-load nvm on directory change (silent)
+autoload -U add-zsh-hook
+load-nvmrc() {
+  local node_version="$(nvm version)"
+  local nvmrc_path="$(nvm_find_nvmrc)"
+
+  if [ -n "$nvmrc_path" ]; then
+    local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
+
+    if [ "$nvmrc_node_version" = "N/A" ]; then
+      nvm install
+    elif [ "$nvmrc_node_version" != "$node_version" ]; then
+      nvm use --silent
+    fi
+  elif [ "$node_version" != "$(nvm version default)" ]; then
+    nvm use default --silent
+  fi
+}
+add-zsh-hook chpwd load-nvmrc
+load-nvmrc
 
 # FZF integration with eye candy
 if command -v fzf >/dev/null 2>&1; then
@@ -254,6 +276,22 @@ fi
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 export PATH="$HOME/.local/bin:$PATH"
-export DOCKER_HOST=unix:///run/user/$UID/podman/podman.sock
 export PATH="$HOME/.cargo/bin:$PATH"
 
+
+# Work note alias
+alias work-note='/home/espen/.local/bin/work-note'
+
+# dotnet CLI tab completion
+_dotnet_zsh_complete()
+{
+  local completions=("$(dotnet complete "$words")")
+
+  reply=( "${(ps:\n:)completions}" )
+}
+
+compctl -K _dotnet_zsh_complete dotnet
+alias excel="xleak -i"
+
+# TIDAL TUI audio device (bypass PipeWire routing)
+export TIDAL_AUDIO_DEVICE='alsa/sysdefault:CARD=S3'

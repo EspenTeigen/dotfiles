@@ -5,11 +5,19 @@ return {
     "saghen/blink.compat",
   },
   opts = function(_, opts)
-    -- Disable blink cmdline completion - let noice handle it
-    -- Still need keymap table to avoid LazyVim's boolean issue
+    -- Completely replace cmdline.keymap to avoid LazyVim's invalid boolean values
     opts.cmdline = opts.cmdline or {}
-    opts.cmdline.enabled = false
-    opts.cmdline.keymap = { preset = "none" }
+    opts.cmdline.enabled = true
+    opts.cmdline.keymap = { preset = "enter" } -- Replace entirely, don't merge
+    opts.cmdline.completion = {
+      list = { selection = { preselect = false } },
+      menu = {
+        auto_show = function(ctx)
+          return vim.fn.getcmdtype() == ":"
+        end,
+      },
+      ghost_text = { enabled = true },
+    }
 
     -- Apply your custom completion settings
     opts.keymap = vim.tbl_deep_extend("force", opts.keymap or {}, {
@@ -58,9 +66,10 @@ return {
       jump = function(direction) vim.snippet.jump(direction) end,
     }
 
-    -- Add extra providers (don't override default list - let LazyVim handle it)
-    opts.sources = opts.sources or {}
-    opts.sources.providers = vim.tbl_deep_extend("force", opts.sources.providers or {}, {
+    -- Enable snippet source, obsidian sources, and easy-dotnet
+    opts.sources = vim.tbl_deep_extend("force", opts.sources or {}, {
+      default = { "lsp", "easy-dotnet", "path", "snippets", "buffer", "obsidian", "obsidian_new", "obsidian_tags" },
+      providers = {
         ["easy-dotnet"] = {
           name = "easy-dotnet",
           enabled = true,
@@ -80,6 +89,7 @@ return {
           name = "obsidian_tags",
           module = "blink.compat.source",
         },
+      },
     })
 
     return opts

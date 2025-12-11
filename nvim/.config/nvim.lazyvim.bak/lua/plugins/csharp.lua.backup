@@ -1,0 +1,56 @@
+-- Use Roslyn LSP (newer, works with .NET 8.0+)
+return {
+  {
+    "seblj/roslyn.nvim",
+    ft = "cs",
+    opts = {
+      config = {
+        handlers = {
+          -- Suppress annoying "dotnet server exited" messages
+          ["window/logMessage"] = function() end,
+          ["window/showMessage"] = function(_, result, ctx)
+            -- Only show error messages, suppress info/warning about server exits
+            if result.type == 1 then -- Error
+              vim.notify(result.message, vim.log.levels.ERROR)
+            end
+          end,
+        },
+        on_attach = function(client, bufnr)
+          -- Disable verbose logging
+          client.config.flags = client.config.flags or {}
+          client.config.flags.debounce_text_changes = 150
+        end,
+        settings = {
+          ["csharp|inlay_hints"] = {
+            csharp_enable_inlay_hints_for_implicit_object_creation = true,
+            csharp_enable_inlay_hints_for_implicit_variable_types = true,
+            csharp_enable_inlay_hints_for_lambda_parameter_types = true,
+            csharp_enable_inlay_hints_for_types = true,
+            dotnet_enable_inlay_hints_for_indexer_parameters = true,
+            dotnet_enable_inlay_hints_for_literal_parameters = true,
+            dotnet_enable_inlay_hints_for_object_creation_parameters = true,
+            dotnet_enable_inlay_hints_for_other_parameters = true,
+            dotnet_enable_inlay_hints_for_parameters = true,
+            dotnet_suppress_inlay_hints_for_parameters_that_differ_only_by_suffix = true,
+            dotnet_suppress_inlay_hints_for_parameters_that_match_argument_name = true,
+            dotnet_suppress_inlay_hints_for_parameters_that_match_method_intent = true,
+          },
+        },
+      },
+      -- Suppress stderr output from dotnet commands
+      filewatching = false,
+    },
+  },
+  {
+    "nvim-neotest/neotest",
+    optional = true,
+    dependencies = {
+      {
+        "Issafalcon/neotest-dotnet",
+        cond = function()
+          return vim.fn.executable("dotnet") == 1
+        end,
+      },
+    },
+  },
+}

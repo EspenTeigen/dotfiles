@@ -1,0 +1,17 @@
+return {
+  "danymat/neogen",
+  dependencies = "nvim-treesitter/nvim-treesitter",
+  opts = {
+    snippet_engine = "nvim",
+    languages = {
+      cs = {
+        template = {
+          annotation_convention = "xmldoc",
+        },
+      },
+    },
+  },
+  keys = {
+    { "<leader>cn", "<cmd>Neogen<cr>", desc = "Generate doc comment" },
+  },
+}
