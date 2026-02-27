@@ -7,7 +7,7 @@ return {
 
       -- Add Avalonia LSP configuration
       opts.servers.avalonia_lsp = {
-        cmd = { vim.fn.expand("~/avalonia-lsp-bin/AvaloniaLanguageServer") },
+        cmd = { "dotnet", "--roll-forward", "LatestMajor", vim.fn.expand("~/avalonia-lsp-bin/AvaloniaLanguageServer.dll") },
         filetypes = { "xml" },
         root_dir = function(fname)
           local util = require("lspconfig.util")

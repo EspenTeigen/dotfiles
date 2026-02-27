@@ -14,12 +14,12 @@ vim.filetype.add({
   },
 })
 
--- Disable auto-format for .axaml files
+-- Enable auto-format for .axaml files
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "xml",
   callback = function()
     if vim.fn.expand("%:e") == "axaml" then
-      vim.b.autoformat = false
+      vim.b.autoformat = true
     end
   end,
 })

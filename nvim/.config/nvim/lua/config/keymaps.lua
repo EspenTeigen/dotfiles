@@ -17,6 +17,37 @@ wk.add({
   { "<leader>m", group = "markdown" },
 })
 
+-- DAP keymaps (supplements LazyVim defaults)
+vim.keymap.set("n", "<leader>di", function()
+  require("dap").step_into()
+end, { desc = "Step Into" })
+
+vim.keymap.set("n", "<leader>do", function()
+  require("dap").step_over()
+end, { desc = "Step Over" })
+
+vim.keymap.set("n", "<leader>du", function()
+  require("dap").step_out()
+end, { desc = "Step Out" })
+
+vim.keymap.set("n", "<leader>de", function()
+  require("dap").set_exception_breakpoints({ "all" })
+end, { desc = "Exception Breakpoints" })
+
+vim.keymap.set("n", "<leader>dq", function()
+  require("dap").terminate()
+  require("dapui").close()
+end, { desc = "Quit/Terminate Debug" })
+
+vim.keymap.set("n", "<leader>dL", function()
+  require("dap").list_breakpoints()
+  vim.cmd("copen")
+end, { desc = "List Breakpoints" })
+
+vim.keymap.set("n", "<leader>dC", function()
+  require("dap").repl.clear()
+end, { desc = "Clear REPL" })
+
 -- Easy-dotnet keymaps
 vim.keymap.set("n", "<leader>ce", "<cmd>Dotnet<cr>", { desc = "Easy Dotnet" })
 

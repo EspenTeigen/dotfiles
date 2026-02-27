@@ -67,7 +67,6 @@ source ~/.catppuccin-mocha.zsh
 # Environment variables
 export EDITOR='nvim'
 export VISUAL='nvim'
-export BROWSER='qutebrowser'
 
 # History configuration
 HISTSIZE=50000
@@ -216,6 +215,10 @@ extract() {
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="$HOME/.dotnet/tools:$PATH"
+
+# .NET - point tools to system runtime, keep .NET 8 alias for running apps
+export DOTNET_ROOT="/usr/lib/dotnet"
+alias dotnet8="$HOME/.dotnet/dotnet8"
 export PATH="$HOME/go/bin:$PATH"
 
 # NVM - Load silently to avoid instant prompt issues
@@ -295,3 +298,23 @@ alias excel="xleak -i"
 
 # TIDAL TUI audio device (bypass PipeWire routing)
 export TIDAL_AUDIO_DEVICE='alsa/sysdefault:CARD=S3'
+eval 
+            fuck () {
+                TF_PYTHONIOENCODING=$PYTHONIOENCODING;
+                export TF_SHELL=zsh;
+                export TF_ALIAS=fuck;
+                TF_SHELL_ALIASES=$(alias);
+                export TF_SHELL_ALIASES;
+                TF_HISTORY="$(fc -ln -10)";
+                export TF_HISTORY;
+                export PYTHONIOENCODING=utf-8;
+                TF_CMD=$(
+                    thefuck THEFUCK_ARGUMENT_PLACEHOLDER $@
+                ) && eval $TF_CMD;
+                unset TF_HISTORY;
+                export PYTHONIOENCODING=$TF_PYTHONIOENCODING;
+                test -n "$TF_CMD" && print -s $TF_CMD
+            }
+        
+
+eval $(thefuck --alias)
