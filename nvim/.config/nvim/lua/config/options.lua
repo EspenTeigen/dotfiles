@@ -5,6 +5,4 @@
 -- Clipboard disabled for remote - use tmux copy mode (Ctrl+b [)
 -- vim.opt.clipboard = "unnamedplus"
 
--- Reduce LSP log noise
-vim.lsp.set_log_level("ERROR")
 

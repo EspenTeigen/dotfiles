@@ -23,6 +23,7 @@ Thumbs.db
 **/.local
 **/local.conf
 **/local.json
+.zshrc.local
 
 # Neovim
 nvim/.config/nvim/lazy-lock.json

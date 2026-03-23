@@ -228,7 +228,7 @@ fi
 # Install NVM (Node Version Manager)
 if [[ ! -d "$HOME/.nvm" ]]; then
     log_info "Installing NVM..."
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     log_success "NVM installed"
@@ -282,6 +282,9 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     cd - > /dev/null
 fi
 
+# Resolve dotfiles directory
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # Create wallpapers directory and symlink
 log_info "Setting up wallpapers directory..."
 mkdir -p ~/Pictures/wallpapers
@@ -292,7 +295,6 @@ fi
 
 # Use stow to symlink dotfiles
 log_info "Creating symlinks with stow..."
-DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DOTFILES_DIR"
 
 # Stow each config directory

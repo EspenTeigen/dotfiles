@@ -157,9 +157,6 @@ alias pscpu='ps auxf | sort -nr -k 3'
 alias cpuinfo='lscpu'
 alias gpumeminfo='grep -i --color memory /proc/meminfo'
 
-# SSHFS aliases
-alias mount-fi='sshfs NTE-FI-01-02:/home/pi ~/projects/frankenstein-dev -o idmap=user,uid=1000,gid=1000,allow_other,reconnect'
-
 # Network management with proper colors
 alias nmtui='NEWT_COLORS= TERM=vt100 nmtui'
 
@@ -215,10 +212,6 @@ extract() {
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="$HOME/.dotnet/tools:$PATH"
-
-# .NET - point tools to system runtime, keep .NET 8 alias for running apps
-export DOTNET_ROOT="/usr/lib/dotnet"
-alias dotnet8="$HOME/.dotnet/dotnet8"
 export PATH="$HOME/go/bin:$PATH"
 
 # NVM - Load silently to avoid instant prompt issues
@@ -278,12 +271,6 @@ fi
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/.cargo/bin:$PATH"
-
-
-# Work note alias
-alias work-note='/home/espen/.local/bin/work-note'
 
 # dotnet CLI tab completion
 _dotnet_zsh_complete()
@@ -294,27 +281,8 @@ _dotnet_zsh_complete()
 }
 
 compctl -K _dotnet_zsh_complete dotnet
-alias excel="xleak -i"
 
-# TIDAL TUI audio device (bypass PipeWire routing)
-export TIDAL_AUDIO_DEVICE='alsa/sysdefault:CARD=S3'
-eval 
-            fuck () {
-                TF_PYTHONIOENCODING=$PYTHONIOENCODING;
-                export TF_SHELL=zsh;
-                export TF_ALIAS=fuck;
-                TF_SHELL_ALIASES=$(alias);
-                export TF_SHELL_ALIASES;
-                TF_HISTORY="$(fc -ln -10)";
-                export TF_HISTORY;
-                export PYTHONIOENCODING=utf-8;
-                TF_CMD=$(
-                    thefuck THEFUCK_ARGUMENT_PLACEHOLDER $@
-                ) && eval $TF_CMD;
-                unset TF_HISTORY;
-                export PYTHONIOENCODING=$TF_PYTHONIOENCODING;
-                test -n "$TF_CMD" && print -s $TF_CMD
-            }
-        
-
-eval $(thefuck --alias)
+# thefuck
+if command -v thefuck >/dev/null 2>&1; then
+    eval $(thefuck --alias)
+fi
