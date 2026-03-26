@@ -286,3 +286,4 @@ compctl -K _dotnet_zsh_complete dotnet
 if command -v thefuck >/dev/null 2>&1; then
     eval $(thefuck --alias)
 fi
+export PATH="$HOME/xpack-riscv-none-elf-gcc-15.2.0-1/bin:$HOME/oss-cad-suite/bin:$HOME/lscc/diamond/3.14/bin/lin64:$PATH"
