@@ -361,9 +361,10 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     cd - > /dev/null
 fi
 
-# Create wallpapers directory and symlink
-log_info "Setting up wallpapers directory..."
-mkdir -p ~/Pictures/wallpapers
+# Create wallpapers and screenshots directories. The grim/slurp bindings
+# in the sway config write to ~/Pictures/screenshots/.
+log_info "Setting up Pictures subdirectories..."
+mkdir -p ~/Pictures/wallpapers ~/Pictures/screenshots
 SWAY_WALLPAPERS="$DOTFILES_DIR/sway/.config/sway/wallpapers"
 if [[ -L "$SWAY_WALLPAPERS" ]]; then
     :
