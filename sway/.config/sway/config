@@ -167,6 +167,14 @@ exec swayidle -w \
     # Wipe clipboard history
     bindsym $mod+Shift+v exec sh -c 'cliphist wipe && notify-send -a cliphist "Clipboard history cleared"'
 
+    # Screenshots — saved to ~/Pictures/screenshots/ AND copied to the clipboard.
+    # Print           : full screen (all outputs)
+    # Shift+Print     : drag-select region
+    # Ctrl+Print      : active window only
+    bindsym Print       exec sh -c 'f=~/Pictures/screenshots/$(date +%Y%m%d-%H%M%S).png && grim "$f" && wl-copy < "$f" && notify-send -a screenshot "Screenshot saved" "$f"'
+    bindsym Shift+Print exec sh -c 'f=~/Pictures/screenshots/$(date +%Y%m%d-%H%M%S).png && grim -g "$(slurp)" "$f" && wl-copy < "$f" && notify-send -a screenshot "Region saved" "$f"'
+    bindsym Ctrl+Print  exec sh -c 'f=~/Pictures/screenshots/$(date +%Y%m%d-%H%M%S).png && grim -g "$(swaymsg -t get_tree | jq -r ".. | select(.focused?) | .rect | \"\(.x),\(.y) \(.width)x\(.height)\"")" "$f" && wl-copy < "$f" && notify-send -a screenshot "Window saved" "$f"'
+
     # Audio controls
     bindsym XF86AudioRaiseVolume exec wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+
     bindsym XF86AudioLowerVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-

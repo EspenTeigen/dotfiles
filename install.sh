@@ -114,6 +114,9 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
         rofi
         wl-clipboard
         cliphist
+        grim
+        slurp
+        jq
         playerctl
     )
     PACKAGES+=("${SWAY_PACKAGES[@]}")
