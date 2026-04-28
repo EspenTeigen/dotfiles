@@ -162,6 +162,11 @@ exec swayidle -w \
     bindsym $mod+n exec swaync-client -t -sw
     bindsym $mod+Shift+n exec swaync-client -d -sw
 
+    # Clipboard history — pick an entry to copy it back to the clipboard
+    bindsym $mod+v exec sh -c 'cliphist list | rofi -dmenu -p "Clipboard" -theme-str "window { width: 50%; }" | cliphist decode | wl-copy'
+    # Wipe clipboard history
+    bindsym $mod+Shift+v exec sh -c 'cliphist wipe && notify-send -a cliphist "Clipboard history cleared"'
+
     # Audio controls
     bindsym XF86AudioRaiseVolume exec wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+
     bindsym XF86AudioLowerVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
@@ -295,6 +300,11 @@ exec waybar
 
 # Start notification daemon
 exec swaync
+
+# Clipboard history — wl-paste watchers feed cliphist's database. Text and
+# images are stored separately. Bound below to $mod+v via rofi.
+exec wl-paste --type text --watch cliphist store
+exec wl-paste --type image --watch cliphist store
 
 # Start birdtray for Thunderbird notifications
 exec birdtray

@@ -113,6 +113,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
         sway-notification-center
         rofi
         wl-clipboard
+        cliphist
         playerctl
     )
     PACKAGES+=("${SWAY_PACKAGES[@]}")
