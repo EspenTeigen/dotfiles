@@ -1,0 +1,7 @@
+# Custom keymap — extends yazi's defaults (defaults stay in effect for keys
+# not listed here). See: https://yazi-rs.github.io/docs/configuration/keymap
+[manager]
+prepend_keymap = [
+    # Jump to udiskie's auto-mount root (USB sticks, SD cards land here)
+    { on = "M", run = "cd /run/media/espen", desc = "Jump to /run/media/$USER" },
+]

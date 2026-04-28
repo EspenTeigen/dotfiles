@@ -314,6 +314,11 @@ exec swaync
 exec wl-paste --type text --watch cliphist store
 exec wl-paste --type image --watch cliphist store
 
+# Auto-mount removable media (USB sticks, SD cards) via udisks2. Mounts
+# land under /run/media/$USER/. --notify shows a swaync popup on insert,
+# --no-tray skips the GTK tray icon since waybar handles status.
+exec udiskie --no-tray --notify
+
 # Start birdtray for Thunderbird notifications
 exec birdtray
 

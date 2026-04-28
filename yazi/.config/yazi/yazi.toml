@@ -1,0 +1,32 @@
+[manager]
+ratio = [1, 3, 4]
+
+# `open` matches a file's MIME type / name pattern (top-down) and lists the
+# openers eligible for it. Pressing Enter runs the first opener; `o` opens
+# the picker. We send everything text-shaped to nvim and fall back to
+# xdg-open for the rest (images, PDFs, etc).
+[open]
+rules = [
+    { name = "*/", use = ["edit", "open", "reveal"] },
+    { mime = "text/*", use = ["edit", "reveal"] },
+    { mime = "application/json", use = ["edit", "reveal"] },
+    { mime = "application/xml", use = ["edit", "reveal"] },
+    { mime = "application/javascript", use = ["edit", "reveal"] },
+    { mime = "application/x-yaml", use = ["edit", "reveal"] },
+    { mime = "application/toml", use = ["edit", "reveal"] },
+    { mime = "application/x-shellscript", use = ["edit", "reveal"] },
+    { mime = "application/x-php", use = ["edit", "reveal"] },
+    # Files with no recognised mime (or empty files) still open in nvim
+    { name = "*", use = ["edit", "open", "reveal"] },
+]
+
+[opener]
+edit = [
+    { run = 'nvim "$@"', desc = "Edit in Neovim", block = true, for = "unix" },
+]
+open = [
+    { run = 'xdg-open "$@"', desc = "Open with system default", orphan = true, for = "unix" },
+]
+reveal = [
+    { run = 'foot --working-directory="$(dirname "$1")" -e $SHELL', desc = "Open shell here", orphan = true, for = "unix" },
+]

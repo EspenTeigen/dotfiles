@@ -117,6 +117,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
         grim
         slurp
         jq
+        udiskie
         playerctl
     )
     PACKAGES+=("${SWAY_PACKAGES[@]}")
@@ -288,6 +289,19 @@ if check_command bob; then
     bob use stable || log_warn "Failed to install Neovim via bob"
 fi
 
+# Install yazi (terminal file manager) via cargo. Distro packages either
+# don't exist (Ubuntu) or lag the upstream release pace. Must use the
+# `yazi-build` meta-crate; installing yazi-fm/yazi-cli directly fails
+# with a hard build-script panic.
+if ! check_command yazi; then
+    log_info "Installing yazi (terminal file manager)..."
+    if command -v cargo &>/dev/null; then
+        cargo install --force yazi-build || log_warn "Failed to install yazi"
+    else
+        log_warn "cargo not on PATH; skipping yazi"
+    fi
+fi
+
 # Install Go from the official tarball — distro packages often lag.
 if ! check_command go; then
     log_info "Installing Go..."
@@ -373,6 +387,10 @@ CONFIGS=(
 # Add optional configs
 if check_command sway; then
     CONFIGS+=("sway" "waybar" "swaync" "rofi" "foot")
+fi
+
+if check_command yazi; then
+    CONFIGS+=("yazi")
 fi
 
 # Always stow ghostty config — ghostty itself may be installed later by hand.
