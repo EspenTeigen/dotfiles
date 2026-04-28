@@ -1,0 +1,85 @@
+/* Tokyo Night palette — matches sway/ghostty/rofi */
+@define-color base    #1a1b26;
+@define-color surface #16161e;
+@define-color overlay #414868;
+@define-color muted   #565f89;
+@define-color text    #c0caf5;
+@define-color blue    #7aa2f7;
+@define-color cyan    #7dcfff;
+@define-color green   #9ece6a;
+@define-color orange  #ff9e64;
+@define-color red     #f7768e;
+@define-color magenta #bb9af7;
+
+* {
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 13px;
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+}
+
+window#waybar {
+    background-color: @base;
+    color: @text;
+    border-bottom: 1px solid @overlay;
+}
+
+#workspaces button {
+    padding: 0 8px;
+    color: @muted;
+    background: transparent;
+    border-bottom: 2px solid transparent;
+}
+
+#workspaces button:hover {
+    background: @surface;
+    color: @text;
+}
+
+#workspaces button.focused,
+#workspaces button.visible {
+    color: @text;
+    background: @surface;
+    border-bottom: 2px solid @blue;
+}
+
+#workspaces button.urgent {
+    color: @red;
+    border-bottom: 2px solid @red;
+}
+
+#mode,
+#window {
+    padding: 0 10px;
+    color: @text;
+}
+
+#cpu,
+#memory,
+#battery,
+#clock,
+#custom-swaync {
+    padding: 0 12px;
+}
+
+#cpu             { color: @green;   }
+#memory          { color: @magenta; }
+#clock           { color: @blue;    }
+#battery         { color: @text;    }
+#custom-swaync   { color: @cyan;    }
+#custom-swaync.notification { color: @orange; }
+#custom-swaync.dnd-none,
+#custom-swaync.dnd-notification { color: @muted; }
+
+#battery.charging,
+#battery.plugged { color: @green; }
+#battery.warning:not(.charging)  { color: @orange; }
+#battery.critical:not(.charging) {
+    color: @red;
+    animation: blink 0.6s linear infinite alternate;
+}
+
+@keyframes blink {
+    to { color: @text; }
+}

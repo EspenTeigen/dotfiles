@@ -213,6 +213,10 @@ export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="$HOME/.dotnet/tools:$PATH"
 export PATH="$HOME/go/bin:$PATH"
+# Go toolchain installed to /usr/local/go by install.sh
+export PATH="/usr/local/go/bin:$PATH"
+# Neovim managed by bob (https://github.com/MordechaiHadad/bob)
+export PATH="$HOME/.local/share/bob/nvim-bin:$PATH"
 
 # NVM - Load silently to avoid instant prompt issues
 export NVM_DIR="$HOME/.nvm"

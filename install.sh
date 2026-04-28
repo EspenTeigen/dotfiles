@@ -23,6 +23,34 @@ check_command() {
     fi
 }
 
+# Resolve dotfiles directory up front — used by swaylock-effects wallpaper copy
+# and by the stow step at the bottom.
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+check_package() {
+    case "$PKG_MANAGER" in
+        apt) dpkg -s "$1" &>/dev/null ;;
+        pacman) pacman -Q "$1" &>/dev/null ;;
+        dnf) rpm -q "$1" &>/dev/null ;;
+        *) return 1 ;;
+    esac
+}
+
+# Clone a git repo to a temp dir, meson+ninja build, sudo install, clean up.
+meson_build_install() {
+    local repo_url="$1"
+    local build_dir
+    build_dir=$(mktemp -d)
+    git clone --depth=1 "$repo_url" "$build_dir"
+    (
+        cd "$build_dir"
+        meson setup build
+        ninja -C build
+        sudo ninja -C build install
+    )
+    rm -rf "$build_dir"
+}
+
 # Detect package manager
 if command -v apt &>/dev/null; then
     PKG_MANAGER="apt"
@@ -35,13 +63,17 @@ elif command -v dnf &>/dev/null; then
 elif command -v pacman &>/dev/null; then
     PKG_MANAGER="pacman"
     INSTALL_CMD="sudo pacman -S --noconfirm"
-    UPDATE_CMD="sudo pacman -Sy"
+    # Full -Syu — partial upgrades on Arch are unsupported and break linking.
+    UPDATE_CMD="sudo pacman -Syu --noconfirm"
 else
     log_error "Unsupported package manager. Please install dependencies manually."
     exit 1
 fi
 
 log_info "Detected package manager: $PKG_MANAGER"
+
+# Prime sudo so password prompts don't interrupt curl|bash steps later.
+sudo -v
 
 # Update package lists
 log_info "Updating package lists..."
@@ -56,16 +88,18 @@ PACKAGES=(
     wget
     zsh
     tmux
-    neovim
     fzf
     stow
     ripgrep
     fd-find
+    unzip
     python3
     python3-numpy
     python3-pil
     pandoc
 )
+# Note: Neovim is intentionally NOT in PACKAGES — distro repos lag behind
+# plugin requirements. It is installed via `bob` below (after Rust).
 
 # Add sway packages if user wants it
 read -p "Install Sway window manager and related tools? (y/n) " -n 1 -r
@@ -103,16 +137,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
             $INSTALL_CMD mpv-devel meson ninja-build pkgconfig mesa-libEGL-devel
         fi
 
-        # Build and install
-        BUILD_DIR=$(mktemp -d)
-        git clone https://github.com/GhostNaN/mpvpaper.git "$BUILD_DIR"
-        cd "$BUILD_DIR"
-        meson build
-        ninja -C build
-        sudo ninja -C build install
-        cd - > /dev/null
-        rm -rf "$BUILD_DIR"
-
+        meson_build_install https://github.com/GhostNaN/mpvpaper.git
         log_success "mpvpaper installed"
     fi
 
@@ -131,16 +156,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
             $INSTALL_CMD meson wayland-devel pam-devel cairo-devel gdk-pixbuf2-devel libxkbcommon-devel
         fi
 
-        # Build and install
-        BUILD_DIR=$(mktemp -d)
-        git clone https://github.com/mortie/swaylock-effects.git "$BUILD_DIR"
-        cd "$BUILD_DIR"
-        meson build
-        ninja -C build
-        sudo ninja -C build install
-        cd - > /dev/null
-        rm -rf "$BUILD_DIR"
-
+        meson_build_install https://github.com/mortie/swaylock-effects.git
         log_success "swaylock-effects installed"
 
         # Copy wallpapers if they exist
@@ -175,7 +191,9 @@ for pkg in "${PACKAGES[@]}"; do
         esac
     fi
 
-    if ! check_command "$pkg"; then
+    if check_package "$pkg"; then
+        log_success "$pkg is already installed"
+    else
         log_info "Installing $pkg..."
         $INSTALL_CMD "$pkg" || log_warn "Failed to install $pkg"
     fi
@@ -248,9 +266,50 @@ if ! check_command cargo; then
     log_success "Rust installed"
 fi
 
-# Install Go
+# Install bob (Neovim version manager) via cargo, then install latest stable
+# Neovim through it. Distro Neovim is too old for modern plugins.
+if ! check_command bob; then
+    log_info "Installing bob (Neovim version manager)..."
+    if command -v cargo &>/dev/null; then
+        cargo install bob-nvim || log_warn "Failed to install bob"
+    else
+        log_warn "cargo not on PATH; skipping bob"
+    fi
+fi
+
+if check_command bob; then
+    log_info "Installing latest stable Neovim via bob..."
+    bob use stable || log_warn "Failed to install Neovim via bob"
+fi
+
+# Install Go from the official tarball — distro packages often lag.
 if ! check_command go; then
-    log_warn "Go not installed. Install manually from: https://go.dev/doc/install"
+    log_info "Installing Go..."
+    case "$(uname -m)" in
+        x86_64)  GO_ARCH=amd64 ;;
+        aarch64) GO_ARCH=arm64 ;;
+        armv6l)  GO_ARCH=armv6l ;;
+        *)       GO_ARCH="" ;;
+    esac
+
+    if [[ -z "$GO_ARCH" ]]; then
+        log_warn "Unsupported arch $(uname -m) for Go auto-install; skipping"
+    else
+        GO_VERSION=$(curl -fsSL "https://go.dev/VERSION?m=text" | head -n 1)
+        if [[ -z "$GO_VERSION" ]]; then
+            log_warn "Could not determine latest Go version; skipping"
+        else
+            GO_TARBALL=$(mktemp --suffix=.tar.gz)
+            if curl -fsSL "https://go.dev/dl/${GO_VERSION}.linux-${GO_ARCH}.tar.gz" -o "$GO_TARBALL"; then
+                sudo rm -rf /usr/local/go
+                sudo tar -C /usr/local -xzf "$GO_TARBALL"
+                log_success "Go ${GO_VERSION} installed to /usr/local/go"
+            else
+                log_warn "Failed to download Go tarball"
+            fi
+            rm -f "$GO_TARBALL"
+        fi
+    fi
 fi
 
 # Install Nerd Fonts
@@ -282,15 +341,16 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     cd - > /dev/null
 fi
 
-# Resolve dotfiles directory
-DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
 # Create wallpapers directory and symlink
 log_info "Setting up wallpapers directory..."
 mkdir -p ~/Pictures/wallpapers
-if [[ ! -L "$DOTFILES_DIR/sway/.config/sway/wallpapers" ]]; then
-    rm -rf "$DOTFILES_DIR/sway/.config/sway/wallpapers"
-    ln -s ~/Pictures/wallpapers "$DOTFILES_DIR/sway/.config/sway/wallpapers"
+SWAY_WALLPAPERS="$DOTFILES_DIR/sway/.config/sway/wallpapers"
+if [[ -L "$SWAY_WALLPAPERS" ]]; then
+    :
+elif [[ -e "$SWAY_WALLPAPERS" ]]; then
+    log_warn "$SWAY_WALLPAPERS exists and is not a symlink; leaving it alone"
+else
+    ln -s ~/Pictures/wallpapers "$SWAY_WALLPAPERS"
 fi
 
 # Use stow to symlink dotfiles
@@ -306,12 +366,11 @@ CONFIGS=(
 
 # Add optional configs
 if check_command sway; then
-    CONFIGS+=("sway")
+    CONFIGS+=("sway" "waybar" "rofi" "foot")
 fi
 
-if check_command ghostty; then
-    CONFIGS+=("ghostty")
-fi
+# Always stow ghostty config — ghostty itself may be installed later by hand.
+CONFIGS+=("ghostty")
 
 # Always include theme files
 CONFIGS+=("catppuccin-mocha" "p10k")
@@ -325,20 +384,23 @@ done
 
 log_success "Dotfiles symlinked"
 
-# Change default shell to zsh
-if [[ "$SHELL" != "$(which zsh)" ]]; then
-    log_info "Changing default shell to zsh..."
-    chsh -s "$(which zsh)"
-    log_success "Default shell changed to zsh"
-fi
-
-# Install Python packages for markdown PDF rendering
+# Install Python packages for markdown PDF rendering.
+# Newer distros enforce PEP 668 and reject plain --user; retry with
+# --break-system-packages if the first attempt fails.
 log_info "Installing Python packages for markdown PDF rendering..."
-pip3 install --user weasyprint markdown || log_warn "Failed to install Python packages"
+pip3 install --user weasyprint markdown 2>/dev/null \
+    || pip3 install --user --break-system-packages weasyprint markdown \
+    || log_warn "Failed to install Python packages"
 
 # Install Neovim plugins
 log_info "Installing Neovim plugins..."
 log_warn "First run of Neovim will install plugins. This may take a moment."
+
+# chsh prompts for a password — do it last so it can't halt the install mid-way.
+if [[ "$SHELL" != "$(which zsh)" ]]; then
+    log_info "Changing default shell to zsh..."
+    chsh -s "$(which zsh)" || log_warn "Failed to change default shell (run 'chsh -s \$(which zsh)' manually)"
+fi
 
 echo
 log_success "Installation complete!"

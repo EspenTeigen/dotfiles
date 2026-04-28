@@ -35,3 +35,6 @@ sway/.config/sway/wallpapers
 # System-specific paths
 **/cache/
 **/logs/
+
+# Python
+**/__pycache__/

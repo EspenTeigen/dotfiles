@@ -16,9 +16,13 @@ log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
 log_info "Updating dotfiles and plugins..."
 
+# Resolve dotfiles directory up front so git pull always targets this repo,
+# regardless of where the user invoked the script from.
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # Update dotfiles repo
 log_info "Pulling latest dotfiles..."
-git pull origin main || log_warn "Failed to pull latest changes"
+(cd "$DOTFILES_DIR" && git pull origin main) || log_warn "Failed to pull latest changes"
 
 # Update Oh My Zsh
 if [[ -d "$HOME/.oh-my-zsh" ]]; then
@@ -84,7 +88,6 @@ fi
 
 # Re-stow configs to ensure symlinks are current
 log_info "Re-stowing configs..."
-DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DOTFILES_DIR"
 
 CONFIGS=(
@@ -93,14 +96,11 @@ CONFIGS=(
     "nvim"
     "catppuccin-mocha"
     "p10k"
+    "ghostty"
 )
 
 if [[ -d "sway" ]] && command -v sway &>/dev/null; then
-    CONFIGS+=("sway")
-fi
-
-if [[ -d "ghostty" ]] && command -v ghostty &>/dev/null; then
-    CONFIGS+=("ghostty")
+    CONFIGS+=("sway" "waybar" "rofi")
 fi
 
 for config in "${CONFIGS[@]}"; do

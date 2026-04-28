@@ -62,18 +62,44 @@ set $menu rofi -show drun
 include /etc/sway/config-vars.d/*
 
 ### Output configuration
-#
-# mpvpaper video wallpaper (disabled - was eating 100% CPU for 12 days straight)
-# exec_always pkill mpvpaper || true; pkill swaybg || true; sleep 0.5; mpvpaper -o 'loop' '*' /home/espen/Wallpapers/hellscape.mp4
 
-# Static wallpaper
-output * bg /home/espen/Wallpapers/mario.jpg fill
-#
-# Example configuration:
-#
-#   output HDMI-A-1 resolution 1920x1080 position 1920,0
-#
-# You can get the names of your outputs by running: swaymsg -t get_outputs
+# Identify monitors by make+model+serial so the config survives swapping
+# DisplayPort cables (which otherwise rotates the DP-5 / DP-6 names).
+# Run `swaymsg -t get_outputs` to find make/model/serial for new monitors.
+set $aoc     "AOC G2790G4 HESM5HA015737"
+set $samsung "Samsung Electric Company LF24T450F HK2R900413"
+set $laptop  eDP-1
+
+# Physical layout (left → right):  AOC (primary)  →  Samsung
+# Laptop panel sits below the AOC, only relevant when the lid is open.
+output $aoc     resolution 1920x1080@60Hz position 0 0
+output $samsung resolution 1920x1080@60Hz position 1920 0
+output $laptop  resolution 1920x1200@60Hz position 0 1080
+
+# Pin workspaces to outputs. The list is a fallback chain — first match wins,
+# so workspace 1 lands on the AOC if it's there, else Samsung, else laptop.
+workspace 1  output $aoc $samsung $laptop
+workspace 2  output $aoc $samsung $laptop
+workspace 3  output $aoc $samsung $laptop
+workspace 4  output $aoc $samsung $laptop
+workspace 5  output $aoc $samsung $laptop
+workspace 6  output $samsung $aoc $laptop
+workspace 7  output $samsung $aoc $laptop
+workspace 8  output $samsung $aoc $laptop
+workspace 9  output $samsung $aoc $laptop
+workspace 10 output $samsung $aoc $laptop
+
+# Generated wallpaper sized to each output (Tokyo Night themed)
+exec_always ~/.config/sway/scripts/generate-wallpaper.py
+
+# Laptop lid handling — disable the internal panel when the lid is closed so
+# workspaces flow to whatever external monitor is connected. Re-enable on
+# open and regenerate the wallpaper for the freshly-active output.
+# --reload  : apply current switch state on sway start/reload (so booting with
+#             the lid already closed correctly disables eDP-1)
+# --locked  : keep working while the screen is locked
+bindswitch --reload --locked lid:on  output $laptop disable
+bindswitch --reload --locked lid:off output $laptop enable, exec ~/.config/sway/scripts/generate-wallpaper.py
 
 ### Idle configuration
 #
@@ -132,14 +158,21 @@ exec swayidle -w \
     # Show keybindings
     bindsym $mod+question exec sh -c 'grep "bindsym" ~/.config/sway/config | grep -v "^#" | sed "s/.*bindsym //" | rofi -dmenu -i -p "Keybindings" -theme-str "window { width: 50%; height: 60%; }"'
 
+    # Toggle notification center / dismiss latest popup
+    bindsym $mod+n exec swaync-client -t -sw
+    bindsym $mod+Shift+n exec swaync-client -d -sw
+
     # Audio controls
-    bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
-    bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
-    bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
-    bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
+    bindsym XF86AudioRaiseVolume exec wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+
+    bindsym XF86AudioLowerVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+    bindsym XF86AudioMute exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+    bindsym XF86AudioMicMute exec wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
     bindsym XF86AudioPlay exec playerctl play-pause
     bindsym XF86AudioNext exec playerctl next
     bindsym XF86AudioPrev exec playerctl previous
+
+    # Audio mixer (switch default input/output devices, per-app volume)
+    bindsym $mod+Shift+a exec $term -e pulsemixer
 #
 # Moving around:
 #
@@ -261,7 +294,7 @@ bindsym $mod+r mode "resize"
 exec waybar
 
 # Start notification daemon
-exec mako
+exec swaync
 
 # Start birdtray for Thunderbird notifications
 exec birdtray

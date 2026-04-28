@@ -1,0 +1,114 @@
+/* Tokyo Night palette — matches waybar/sway/ghostty/rofi */
+@define-color base    #1a1b26;
+@define-color surface #16161e;
+@define-color overlay #414868;
+@define-color muted   #565f89;
+@define-color text    #c0caf5;
+@define-color blue    #7aa2f7;
+@define-color cyan    #7dcfff;
+@define-color green   #9ece6a;
+@define-color orange  #ff9e64;
+@define-color red     #f7768e;
+@define-color magenta #bb9af7;
+
+* {
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 13px;
+}
+
+/* Popups (the ones that briefly appear while center is closed) */
+.notification-row {
+    background: transparent;
+}
+
+.notification {
+    background: @base;
+    border: 1px solid @overlay;
+    border-radius: 6px;
+    margin: 6px;
+    padding: 0;
+}
+
+.notification-content {
+    padding: 10px;
+    color: @text;
+}
+
+.summary {
+    color: @text;
+    font-weight: bold;
+}
+
+.body {
+    color: @muted;
+}
+
+.close-button {
+    background: transparent;
+    color: @red;
+    border: none;
+    margin: 4px;
+    padding: 2px 6px;
+}
+
+.close-button:hover {
+    background: @surface;
+}
+
+/* Notification center panel */
+.control-center {
+    background: @base;
+    border: 1px solid @overlay;
+    border-radius: 8px;
+    margin: 8px;
+    padding: 8px;
+    color: @text;
+}
+
+.control-center .notification-row {
+    margin: 2px 0;
+}
+
+.widget-title {
+    color: @text;
+    margin: 4px 8px;
+    font-size: 14px;
+}
+
+.widget-title > button {
+    background: @surface;
+    color: @text;
+    border: 1px solid @overlay;
+    border-radius: 4px;
+    padding: 2px 8px;
+}
+
+.widget-title > button:hover {
+    background: @overlay;
+}
+
+.widget-dnd {
+    color: @text;
+    margin: 4px 8px;
+}
+
+.widget-dnd > switch {
+    background: @surface;
+    border-radius: 12px;
+}
+
+.widget-dnd > switch:checked {
+    background: @blue;
+}
+
+.floating-notifications.background .notification {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.notification.critical {
+    border-color: @red;
+}
+
+.notification.low {
+    border-color: @muted;
+}
