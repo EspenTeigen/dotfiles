@@ -110,7 +110,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
         waybar
         swaylock
         swayidle
-        mako-notifier
+        sway-notification-center
         rofi
         wl-clipboard
         playerctl
@@ -184,10 +184,12 @@ for pkg in "${PACKAGES[@]}"; do
             "fd-find") pkg="fd" ;;
             "python3-numpy") pkg="python-numpy" ;;
             "python3-pil") pkg="python-pillow" ;;
+            "sway-notification-center") pkg="swaync" ;;
         esac
     elif [[ "$PKG_MANAGER" == "dnf" ]]; then
         case "$pkg" in
             "python3-pil") pkg="python3-pillow" ;;
+            "sway-notification-center") pkg="SwayNotificationCenter" ;;
         esac
     fi
 
@@ -366,7 +368,7 @@ CONFIGS=(
 
 # Add optional configs
 if check_command sway; then
-    CONFIGS+=("sway" "waybar" "rofi" "foot")
+    CONFIGS+=("sway" "waybar" "swaync" "rofi" "foot")
 fi
 
 # Always stow ghostty config — ghostty itself may be installed later by hand.

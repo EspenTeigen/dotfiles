@@ -23,12 +23,12 @@
   "hide-on-action": true,
   "script-fail-notify": true,
   "notification-visibility": {
-    "tidal-hifi-mute": {
-      "state": "muted",
+    "tidal-hifi-ignore": {
+      "state": "ignored",
       "app-name": "tidal-hifi"
     },
-    "tidal-hifi-mute-alt": {
-      "state": "muted",
+    "tidal-hifi-ignore-alt": {
+      "state": "ignored",
       "app-name": "Tidal Hi-Fi"
     }
   },
